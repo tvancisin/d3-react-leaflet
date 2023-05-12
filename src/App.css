@@ -1,0 +1,12 @@
+.App {
+  text-align: center;
+}
+.svg-environment{
+  height: 400px;
+  width: 500px
+}
+
+.leaflet-container{
+  width: 700px;
+  height: 500px
+}
