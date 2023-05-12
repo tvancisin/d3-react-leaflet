@@ -1,10 +1,13 @@
 import React, { useState,useRef, useEffect } from 'react'
 import * as d3 from 'd3';
-import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Polygon, Marker, Popup } from 'react-leaflet'
+import {statesData} from '../data/UScountries.js';
 
 function Svg() {
+
     const [theData, settheData] = useState ([]);
     const ref = useRef()
+
 
     useEffect(() => {
         d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv", 
@@ -15,22 +18,28 @@ function Svg() {
     console.log(theData);
 
   return (
-    // <svg className='svg-environment'>
+    // <svg classVjName='svg-environment'>
     // </svg>
 
-    <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
+    <MapContainer center={[51.505, -0.09]} zoom={3} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     />
+    {statesData.features.map((state) => {
+        const coordinates = state.geometry.coordinates[0].map((item)=> [item[1], item[0]])
+        return (
+            <Polygon pathOptions={{fillColor:"black", fillOpacity: 0.5}} positions={coordinates} />
+        )
+    })
+    }
+
     <Marker position={[51.505, -0.09]}>
-        {/* <Popup>
+        <Popup>
         A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup> */}
+        </Popup>
     </Marker>
     </MapContainer>
-
-
 
   )
 }
