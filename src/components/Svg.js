@@ -45,12 +45,20 @@ function Svg({data}) {
         text
       </text>
     </SVGOverlay>
+    
     {/* <GeoJSON data={data.features}/> */}
 
     {data.features.map((state) => {
-        state.geometry.coordinates.map((coor)=> console.log(state.properties.name,coor))
+        const coordinates = state.geometry.coordinates.map((item)=> {
+          return item[0].length === 2 ? item.map((item)=>[item[1],item[0]]) : item[0].map((item)=>[item[1],item[0]])
+          // if (item[0].length === 2){
+          //   return item.map((item)=>[item[1],item[0]])
+          // }
+          // else{
+          //   return item[0].map((item)=>[item[1],item[0]])
+          // }
+        })
 
-        const coordinates = state.geometry.coordinates[0].map((item)=> [item[1], item[0]])
         return (
             <Polygon pathOptions={{fillColor:"black", fillOpacity: 0.5}} positions={coordinates} />
         )
