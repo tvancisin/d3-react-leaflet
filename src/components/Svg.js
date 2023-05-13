@@ -60,7 +60,7 @@ function Svg({data}) {
         })
 
         return (
-            <Polygon pathOptions={{fillColor:"black", fillOpacity: 0.5}} positions={coordinates} />
+            <Polygon pathOptions={{fillColor:"blue", fillOpacity: 0.3}} positions={coordinates} />
         )
     })
     }
