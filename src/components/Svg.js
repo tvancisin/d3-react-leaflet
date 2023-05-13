@@ -1,19 +1,27 @@
 import React, { useState,useRef, useEffect } from 'react'
 import * as d3 from 'd3';
-import { MapContainer, SVGOverlay, TileLayer, Polygon, Marker, Popup } from 'react-leaflet'
-import {statesData} from '../data/UScountries.js';
+import { MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, Marker, Popup } from 'react-leaflet'
 
-function Svg() {
+function Svg({data}) {
+    // const [theData, settheData] = useState ([]);
+    // const ref = useRef()
 
-    const [theData, settheData] = useState ([]);
-    const ref = useRef()
+    // const [wresize, setwresize] = useState([window.innerWidth])
 
-    useEffect(() => {
-        d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv", 
-        function (theData) {
-            return { date : d3.timeParse("%Y-%m-%d")(theData.date), value : theData.value }
-        }).then(data => settheData(data))
-    }, []);
+    // const resiii = function () {
+    //     setwresize(window.innerWidth)
+    // }
+    // useEffect(()=>{
+    //     window.addEventListener("resize", resiii)
+    // },[])
+
+    // useEffect(() => {
+    //     console.log("here");
+    //     d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv", 
+    //     function (theData) {
+    //         return { date : d3.timeParse("%Y-%m-%d")(theData.date), value : theData.value }
+    //     }).then(data => settheData(data))
+    // }, [wresize]);
 
     const bounds = [
     [51.49, -0.08],
@@ -22,7 +30,8 @@ function Svg() {
 
   return (
     // <svg classVjName='svg-environment'>
-    // </svg>
+    // // </svg>
+    // <div>{wresize}
 
     <MapContainer center={[51.505, -0.09]} zoom={3} scrollWheelZoom={true}>
     <TileLayer
@@ -36,13 +45,17 @@ function Svg() {
         text
       </text>
     </SVGOverlay>
-    {/* {statesData.features.map((state) => {
+    {/* <GeoJSON data={data.features}/> */}
+
+    {data.features.map((state) => {
+        state.geometry.coordinates.map((coor)=> console.log(state.properties.name,coor))
+
         const coordinates = state.geometry.coordinates[0].map((item)=> [item[1], item[0]])
         return (
             <Polygon pathOptions={{fillColor:"black", fillOpacity: 0.5}} positions={coordinates} />
         )
     })
-    } */}
+    }
 
     <Marker position={[51.505, -0.09]}>
         <Popup>
@@ -50,6 +63,7 @@ function Svg() {
         </Popup>
     </Marker>
     </MapContainer>
+    // </div>
 
   )
 }
