@@ -1,8 +1,88 @@
 import React, { useState,useRef, useEffect } from 'react'
 import * as d3 from 'd3';
-import { MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, Marker, Popup } from 'react-leaflet'
+import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useMap, Marker, Popup } from 'react-leaflet'
+import L from "leaflet";
+import * as d3Geo from "d3-geo";
+
+const geoShape = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [174.78, -41.29],
+            [174.79, -41.29],
+            [174.79, -41.28],
+            [174.78, -41.28],
+            [174.78, -41.29]
+          ]
+        ]
+      }
+    }
+  ]
+}
 
 function Svg({data}) {
+  function D3Layer() {
+    const map = useMap();
+
+    useEffect(() => {
+      const svg = d3.select(map.getPanes().overlayPane).append("svg");
+      const g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+      //  create a d3.geo.path to convert GeoJSON to SVG
+      var transform = d3Geo.geoTransform({
+          point: projectPoint
+        }),
+        path = d3Geo.geoPath().projection(transform);
+
+      // create path elements for each of the features
+      const d3_features = g
+        .selectAll("path")
+        .data(geoShape.features)
+        .enter()
+        .append("path");
+
+      map.on("zoom", reset);
+
+      reset();
+
+      // fit the SVG element to leaflet's map layer
+      function reset() {
+        const bounds = path.bounds(geoShape);
+
+        const topLeft = bounds[0],
+          bottomRight = bounds[1];
+
+        svg
+          .attr("width", bottomRight[0] - topLeft[0])
+          .attr("height", bottomRight[1] - topLeft[1])
+          .style("left", topLeft[0] + "px")
+          .style("top", topLeft[1] + "px");
+
+        g.attr(
+          "transform",
+          "translate(" + -topLeft[0] + "," + -topLeft[1] + ")"
+        );
+
+        // initialize the path data
+        d3_features
+          .attr("d", path)
+          .style("fill-opacity", 0.7)
+          .attr("fill", "blue");
+      }
+
+      // Use Leaflet to implement a D3 geometric transformation.
+      function projectPoint(x, y) {
+        const point = map.latLngToLayerPoint(new L.LatLng(y, x));
+        this.stream.point(point.x, point.y);
+      }
+    }, []);
+    return null;
+  }
     // const [theData, settheData] = useState ([]);
     // const ref = useRef()
 
@@ -33,18 +113,21 @@ function Svg({data}) {
     // // </svg>
     // <div>{wresize}
 
-    <MapContainer center={[51.505, -0.09]} zoom={3} scrollWheelZoom={true}>
+    <MapContainer center={[-41.2858, 174.7868]} zoom={13} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     />
-    <SVGOverlay attributes={{ stroke: 'red' }} bounds={bounds}>
+    {/* <SVGOverlay attributes={{ stroke: 'red' }} bounds={bounds}>
       <rect x="0" y="0" width="100%" height="100%" fill="blue" />
-      <circle r="5" cx="10" cy="10" fill="red" />
+      <circle r="5" cx="5" cy="5" fill="red" />
       <text x="50%" y="50%" stroke="white">
         text
       </text>
-    </SVGOverlay>
+    </SVGOverlay> */}
+    <LayerGroup>
+          <D3Layer />
+    </LayerGroup>
     
     {/* <GeoJSON data={data.features}/> */}
 
@@ -60,7 +143,7 @@ function Svg({data}) {
         })
 
         return (
-            <Polygon pathOptions={{fillColor:"blue", fillOpacity: 0.3}} positions={coordinates} />
+            <Polygon pathOptions={{fillColor:"blue", weight: 1, fillOpacity: 0.05}} positions={coordinates} />
         )
     })
     }
