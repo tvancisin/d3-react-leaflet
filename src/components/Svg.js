@@ -4,6 +4,15 @@ import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useM
 import L from "leaflet";
 import * as d3Geo from "d3-geo";
 
+var markers = [
+  {long: 9.083, lat: 42.149}, // corsica
+  {long: 7.26, lat: 43.71}, // nice
+  {long: 2.349, lat: 48.864}, // Paris
+  {long: -1.397, lat: 43.664}, // Hossegor
+  {long: 3.075, lat: 50.640}, // Lille
+  {long: -3.83, lat: 48}, // Morlaix
+];
+
 const geoShape = {
   "type": "FeatureCollection",
   "features": [
@@ -25,63 +34,38 @@ const geoShape = {
   ]
 }
 
+const wndw = window.innerWidth;
+const wndh = window.innerHeight;
+
 function Svg({data}) {
+
   function D3Layer() {
     const map = useMap();
 
     useEffect(() => {
-      const svg = d3.select(map.getPanes().overlayPane).append("svg");
-      const g = svg.append("g").attr("class", "leaflet-zoom-hide");
+      L.svg().addTo(map);
 
-      //  create a d3.geo.path to convert GeoJSON to SVG
-      var transform = d3Geo.geoTransform({
-          point: projectPoint
-        }),
-        path = d3Geo.geoPath().projection(transform);
-
-      // create path elements for each of the features
-      const d3_features = g
-        .selectAll("path")
-        .data(geoShape.features)
-        .enter()
-        .append("path");
-
-      map.on("zoom", reset);
-
-      reset();
-
-      // fit the SVG element to leaflet's map layer
-      function reset() {
-        const bounds = path.bounds(geoShape);
-
-        const topLeft = bounds[0],
-          bottomRight = bounds[1];
-
-        svg
-          .attr("width", bottomRight[0] - topLeft[0])
-          .attr("height", bottomRight[1] - topLeft[1])
-          .style("left", topLeft[0] + "px")
-          .style("top", topLeft[1] + "px");
-
-        g.attr(
-          "transform",
-          "translate(" + -topLeft[0] + "," + -topLeft[1] + ")"
-        );
-
-        // initialize the path data
-        d3_features
-          .attr("d", path)
-          .style("fill-opacity", 0.7)
-          .attr("fill", "blue");
+      d3.select("svg")
+        .selectAll("myCircles")
+        .data(markers)
+        .join("circle")
+          .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
+          .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
+          .attr("r", 14)
+          .style("fill", "red")
+          .attr("stroke", "red")
+          .attr("stroke-width", 3)
+          .attr("fill-opacity", .4)
+      
+      function update() {
+        d3.selectAll("circle")
+          .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
+          .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
       }
+    
+    map.on("moveend", update)
 
-      // Use Leaflet to implement a D3 geometric transformation.
-      function projectPoint(x, y) {
-        const point = map.latLngToLayerPoint(new L.LatLng(y, x));
-        this.stream.point(point.x, point.y);
-      }
     }, []);
-    return null;
   }
     // const [theData, settheData] = useState ([]);
     // const ref = useRef()
@@ -109,11 +93,8 @@ function Svg({data}) {
     ]
 
   return (
-    // <svg classVjName='svg-environment'>
-    // // </svg>
-    // <div>{wresize}
 
-    <MapContainer center={[-41.2858, 174.7868]} zoom={13} scrollWheelZoom={true}>
+    <MapContainer center={[47, 2]} zoom={5} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
