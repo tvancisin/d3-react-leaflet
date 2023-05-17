@@ -4,6 +4,7 @@ import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useM
 import L from "leaflet";
 import * as d3Geo from "d3-geo";
 
+
 var markers = [
   {long: 9.083, lat: 42.149}, // corsica
   {long: 7.26, lat: 43.71}, // nice
@@ -37,12 +38,26 @@ const geoShape = {
 const wndw = window.innerWidth;
 const wndh = window.innerHeight;
 
-function Svg({data}) {
+function Svg({data, otherData}) {
+
+  // useEffect(()=>{
+
+  // },[])
+
+  // d3.csv(otherData, function(data) { console.log(data); });
+  // const [theData, settheData] = useState();
 
   function D3Layer() {
+    const [gata, setGata] = useState();
     const map = useMap();
 
     useEffect(() => {
+      d3.csv(otherData, 
+      function (data) {
+        console.log(typeof data.lat);
+        return data
+      }).then(data => setGata(data))
+
       L.svg().addTo(map);
 
       d3.select("svg")
@@ -85,12 +100,8 @@ function Svg({data}) {
     //     function (theData) {
     //         return { date : d3.timeParse("%Y-%m-%d")(theData.date), value : theData.value }
     //     }).then(data => settheData(data))
-    // }, [wresize]);
-
-    const bounds = [
-    [51.49, -0.08],
-    [51.5, -0.06],
-    ]
+    // }, []);
+    // console.log(theData);
 
   return (
 
@@ -99,13 +110,6 @@ function Svg({data}) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     />
-    {/* <SVGOverlay attributes={{ stroke: 'red' }} bounds={bounds}>
-      <rect x="0" y="0" width="100%" height="100%" fill="blue" />
-      <circle r="5" cx="5" cy="5" fill="red" />
-      <text x="50%" y="50%" stroke="white">
-        text
-      </text>
-    </SVGOverlay> */}
     <LayerGroup>
           <D3Layer />
     </LayerGroup>
@@ -128,12 +132,6 @@ function Svg({data}) {
         )
     })
     }
-
-    {/* <Marker position={[51.505, -0.09]}>
-        <Popup>
-        A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-    </Marker> */}
     </MapContainer>
     // </div>
 
