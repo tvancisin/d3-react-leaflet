@@ -39,7 +39,7 @@ function Svg({data, otherData}) {
         .join("circle")
           .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
           .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
-          .attr("r", d => d.birth/3)
+          .attr("r", d => d.floruit/3)
           .style("fill", "yellow")
           .attr("stroke", "yellow")
           .attr("stroke-width", 3)
