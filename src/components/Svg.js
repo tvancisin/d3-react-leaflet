@@ -14,63 +14,36 @@ var markers = [
   {long: -3.83, lat: 48}, // Morlaix
 ];
 
-const geoShape = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [174.78, -41.29],
-            [174.79, -41.29],
-            [174.79, -41.28],
-            [174.78, -41.28],
-            [174.78, -41.29]
-          ]
-        ]
-      }
-    }
-  ]
-}
-
-const wndw = window.innerWidth;
-const wndh = window.innerHeight;
-
 function Svg({data, otherData}) {
 
-  // useEffect(()=>{
-
-  // },[])
-
-  // d3.csv(otherData, function(data) { console.log(data); });
-  // const [theData, settheData] = useState();
 
   function D3Layer() {
-    const [gata, setGata] = useState();
-    const map = useMap();
-
+    const [gata, setGata] = useState ([]);
+    
     useEffect(() => {
-      d3.csv(otherData, 
-      function (data) {
-        console.log(typeof data.lat);
-        return data
-      }).then(data => setGata(data))
+    d3.csv(otherData, 
+      function(gata){
+        return { country: gata.Country, lat: +gata.lat, long: +gata.lon, birth: +gata.Birth, floruit: +gata.Floruit }
+      }).then(setGata)
+    }, []);
 
+    console.log(gata);
+
+
+    const map = useMap();
+    // useEffect(() => {
       L.svg().addTo(map);
-
       d3.select("svg")
         .selectAll("myCircles")
-        .data(markers)
+        .data(gata)
         .join("circle")
           .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
           .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
-          .attr("r", 14)
-          .style("fill", "red")
-          .attr("stroke", "red")
+          .attr("r", d => d.birth/3)
+          .style("fill", "yellow")
+          .attr("stroke", "yellow")
           .attr("stroke-width", 3)
-          .attr("fill-opacity", .4)
+          .attr("fill-opacity", .1)
       
       function update() {
         d3.selectAll("circle")
@@ -78,21 +51,10 @@ function Svg({data, otherData}) {
           .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
       }
     
-    map.on("moveend", update)
-
-    }, []);
+      map.on("moveend", update)
+    // }, []);
   }
     // const [theData, settheData] = useState ([]);
-    // const ref = useRef()
-
-    // const [wresize, setwresize] = useState([window.innerWidth])
-
-    // const resiii = function () {
-    //     setwresize(window.innerWidth)
-    // }
-    // useEffect(()=>{
-    //     window.addEventListener("resize", resiii)
-    // },[])
 
     // useEffect(() => {
     //     console.log("here");
@@ -105,7 +67,7 @@ function Svg({data, otherData}) {
 
   return (
 
-    <MapContainer center={[47, 2]} zoom={5} scrollWheelZoom={true}>
+    <MapContainer center={[47, 2]} zoom={3} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -128,7 +90,7 @@ function Svg({data, otherData}) {
         })
 
         return (
-            <Polygon pathOptions={{fillColor:"blue", weight: 1, fillOpacity: 0.05}} positions={coordinates} />
+            <Polygon pathOptions={{fillColor:"blue", weight: 0.5, fillOpacity: 0.05}} positions={coordinates} />
         )
     })
     }
