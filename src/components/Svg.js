@@ -4,18 +4,7 @@ import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useM
 import L from "leaflet";
 import * as d3Geo from "d3-geo";
 
-
-var markers = [
-  {long: 9.083, lat: 42.149}, // corsica
-  {long: 7.26, lat: 43.71}, // nice
-  {long: 2.349, lat: 48.864}, // Paris
-  {long: -1.397, lat: 43.664}, // Hossegor
-  {long: 3.075, lat: 50.640}, // Lille
-  {long: -3.83, lat: 48}, // Morlaix
-];
-
 function Svg({data, otherData}) {
-
 
   function D3Layer() {
     const [gata, setGata] = useState ([]);
@@ -27,32 +16,28 @@ function Svg({data, otherData}) {
       }).then(setGata)
     }, []);
 
-    console.log(gata);
-
-
     const map = useMap();
-    // useEffect(() => {
-      L.svg().addTo(map);
-      d3.select("svg")
-        .selectAll("myCircles")
-        .data(gata)
-        .join("circle")
-          .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
-          .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
-          .attr("r", d => d.floruit/3)
-          .style("fill", "yellow")
-          .attr("stroke", "yellow")
-          .attr("stroke-width", 3)
-          .attr("fill-opacity", .1)
-      
-      function update() {
-        d3.selectAll("circle")
-          .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
-          .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
-      }
+
+    L.svg().addTo(map);
+    d3.select("svg")
+      .selectAll("myCircles")
+      .data(gata)
+      .join("circle")
+        .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
+        .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
+        .attr("r", d => d.birth/3)
+        .style("fill", "yellow")
+        .attr("stroke", "yellow")
+        .attr("stroke-width", 3)
+        .attr("fill-opacity", .1)
     
-      map.on("moveend", update)
-    // }, []);
+    function update() {
+      d3.selectAll("circle")
+        .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
+        .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
+    }
+  
+    map.on("moveend", update)
   }
     // const [theData, settheData] = useState ([]);
 
