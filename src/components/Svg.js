@@ -39,9 +39,9 @@ function Svg({data, otherData, indiaData}) {
         .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
         .attr("r", 5)
         .style("fill", "yellow")
-        .attr("stroke", "yellow")
+        // .attr("stroke", "yellow")
         .attr("stroke-width", 3)
-        .attr("fill-opacity", .1)
+        .attr("fill-opacity", .5)
     
     function update() {
       d3.selectAll("circle")
