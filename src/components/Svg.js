@@ -21,8 +21,11 @@ function Svg({data, otherData, indiaData}) {
       d3.csv(indiaData,
         function (idata) {
           console.log(idata);
+          return { person: idata.forename, lat: +idata.blatitude, long: +idata.blongitude}
         }).then(setIdata)
     },[])
+
+    console.log(idata);
 
 
     const map = useMap();
@@ -30,11 +33,11 @@ function Svg({data, otherData, indiaData}) {
     L.svg().addTo(map);
     d3.select("svg")
       .selectAll("myCircles")
-      .data(gata)
+      .data(idata)
       .join("circle")
         .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
         .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
-        .attr("r", d => d.birth/3)
+        .attr("r", 5)
         .style("fill", "yellow")
         .attr("stroke", "yellow")
         .attr("stroke-width", 3)
