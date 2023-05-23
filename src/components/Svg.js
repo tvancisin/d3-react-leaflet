@@ -13,7 +13,7 @@ function Svg({data, otherData, indiaData}) {
     useEffect(() => {
     d3.csv(otherData, 
       function(gata){
-        return { country: gata.Country, lat: +gata.lat, long: +gata.lon, birth: +gata.Birth, floruit: +gata.Floruit }
+        return { country: gata.Country, lat: +gata.Latitude, long: +gata.Longitude, birth: +gata.Birth, floruit: +gata.Floruit }
       }).then(setGata)
     }, []);
 
@@ -25,6 +25,10 @@ function Svg({data, otherData, indiaData}) {
         }).then(setIdata)
     },[])
 
+    let myScale = d3.scaleLinear()
+      .domain([0, 275])
+      .range([1.5, 100])
+
     console.log(idata);
 
 
@@ -33,15 +37,15 @@ function Svg({data, otherData, indiaData}) {
     L.svg().addTo(map);
     d3.select("svg")
       .selectAll("myCircles")
-      .data(idata)
+      .data(gata)
       .join("circle")
         .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
         .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
-        .attr("r", 5)
-        .style("fill", "yellow")
-        // .attr("stroke", "yellow")
-        .attr("stroke-width", 3)
-        .attr("fill-opacity", .5)
+        .attr("r", d => d.floruit === 0 ? 0 : myScale(d.floruit))
+        .style("fill", "white")
+        .attr("stroke", "white")
+        .attr("stroke-width", 0.7)
+        .attr("fill-opacity", .06)
     
     function update() {
       d3.selectAll("circle")
@@ -64,10 +68,10 @@ function Svg({data, otherData, indiaData}) {
 
   return (
 
-    <MapContainer center={[47, 2]} zoom={3} scrollWheelZoom={true}>
+    <MapContainer center={[27, 20]} zoom={3} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
     />
     <LayerGroup>
           <D3Layer />
@@ -75,7 +79,7 @@ function Svg({data, otherData, indiaData}) {
     
     {/* <GeoJSON data={data.features}/> */}
 
-    {data.features.map((state) => {
+    {/* {data.features.map((state) => {
         const coordinates = state.geometry.coordinates.map((item)=> {
           return item[0].length === 2 ? item.map((item)=>[item[1],item[0]]) : item[0].map((item)=>[item[1],item[0]])
           // if (item[0].length === 2){
@@ -87,10 +91,10 @@ function Svg({data, otherData, indiaData}) {
         })
 
         return (
-            <Polygon pathOptions={{fillColor:"blue", weight: 0.5, fillOpacity: 0.05}} positions={coordinates} />
+            <Polygon pathOptions={{fillColor:"none", weight: 0.5, fillOpacity: 0.05}} positions={coordinates} />
         )
     })
-    }
+    } */}
     </MapContainer>
     // </div>
 
