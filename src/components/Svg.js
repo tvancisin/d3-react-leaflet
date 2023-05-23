@@ -4,10 +4,11 @@ import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useM
 import L from "leaflet";
 import * as d3Geo from "d3-geo";
 
-function Svg({data, otherData}) {
+function Svg({data, otherData, indiaData}) {
 
   function D3Layer() {
     const [gata, setGata] = useState ([]);
+    const [idata, setIdata] = useState ([]);
     
     useEffect(() => {
     d3.csv(otherData, 
@@ -15,6 +16,14 @@ function Svg({data, otherData}) {
         return { country: gata.Country, lat: +gata.lat, long: +gata.lon, birth: +gata.Birth, floruit: +gata.Floruit }
       }).then(setGata)
     }, []);
+
+    useEffect(()=>{
+      d3.csv(indiaData,
+        function (idata) {
+          console.log(idata);
+        }).then(setIdata)
+    },[])
+
 
     const map = useMap();
 
