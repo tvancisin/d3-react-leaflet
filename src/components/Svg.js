@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
 import * as d3 from 'd3';
+import {useEffect, useRef, useState} from "react";
 import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useMap, Marker, Popup } from 'react-leaflet'
 import L from "leaflet";
 import * as d3Geo from "d3-geo";
@@ -142,8 +142,8 @@ function Svg({data, otherData, indiaData}) {
             <Polygon pathOptions={{fillColor:"none", weight: 0.5, fillOpacity: 0.05}} positions={coordinates} />
         )
     })
-    }
-    </MapContainer>
+    } */}
+    {/* </MapContainer> */}
     </div>
 
   )
