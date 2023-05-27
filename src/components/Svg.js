@@ -7,7 +7,7 @@ import * as d3Geo from "d3-geo";
 function Svg({data, otherData, indiaData}) {
 
   const ref = useRef()
-  function D3Layer() {
+  // function D3Layer() {
     const [gata, setGata] = useState ([]);
     const [idata, setIdata] = useState ([]);
     
@@ -21,7 +21,6 @@ function Svg({data, otherData, indiaData}) {
     useEffect(()=>{
       d3.csv(indiaData,
         function (idata) {
-          console.log(idata);
           return { person: idata.forename, start: d3.timeParse("%Y")(idata.arrival), lat: +idata.blatitude, long: +idata.blongitude}
         }).then(setIdata)
     },[])
@@ -30,9 +29,7 @@ function Svg({data, otherData, indiaData}) {
       .domain([0, 275])
       .range([1.5, 100])
 
-    console.log(idata);
-
-    const map = useMap();
+    // const map = useMap();
 
     // useEffect(()=>{
     //   L.svg().addTo(map);
@@ -57,45 +54,52 @@ function Svg({data, otherData, indiaData}) {
     //   map.on("moveend", update)
     // },[idata])
 
-    idata.sort(function(x, y){
-        return d3.ascending(x.start, y.start);
-    })
+    useEffect(()=>{
+      console.log("AYAYA");
+      if (idata.length == 0) {
+        return;
+      }
+      if (ref.current == null) {
+        return;
+      }
+      idata.sort(function(x, y){
+          return d3.ascending(x.start, y.start);
+      })
 
-    const bullcrap = d3.groups(idata, d => d.start)
+      const bullcrap = d3.groups(idata, d => d.start)
 
-    console.log(bullcrap[0]?.[1]);
+      console.log(bullcrap)
+
+      const svgElement = d3.select(ref.current);
+      const x = d3.scaleTime()
+          .domain(d3.extent(bullcrap, function(d) { return d[0]; }))
+          .range([ 0, 460 ]);
+
+      svgElement.append("g")
+          .attr("transform", `translate(0, 400)`)
+          .call(d3.axisBottom(x));
+
+      const y = d3.scaleLinear()
+          .domain([0, d3.max(bullcrap, function(d) { return +d[1].length; })])
+          .range([ 400, 0 ]);
+
+      svgElement.append("g")
+          .call(d3.axisLeft(y));
+
+      svgElement.append("path")
+          .datum(bullcrap)
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 1.5)
+          .attr("d", d3.line()
+              .curve(d3.curveMonotoneX)
+              .x(function(d) { return x(d[0]) })
+              .y(function(d) { return y(d[1].length) })
+              )
+    },[idata, ref])
 
 
-    // useEffect(()=>{
-    //   const svgElement = d3.select(ref.current);
-    //   const x = d3.scaleTime()
-    //       .domain(d3.extent(idata, function(d) { return d[0]; }))
-    //       .range([ 0, 460 ]);
-
-    //   svgElement.append("g")
-    //       .attr("transform", `translate(0, 400)`)
-    //       .call(d3.axisBottom(x));
-
-    //   const y = d3.scaleLinear()
-    //       .domain([0, d3.max(idata, function(d) { return +d.value; })])
-    //       .range([ 400, 0 ]);
-
-    //   svgElement.append("g")
-    //       .call(d3.axisLeft(y));
-
-    //   svgElement.append("path")
-    //       .datum(idata)
-    //       .attr("fill", "none")
-    //       .attr("stroke", "steelblue")
-    //       .attr("stroke-width", 1.5)
-    //       .attr("d", d3.line()
-    //           .x(function(d) { return x(d.start) })
-    //           .y(function(d) { return y(d.value) })
-    //           )
-    // },[idata])
-
-
-  }
+  // }
     // const [theData, settheData] = useState ([]);
 
     // useEffect(() => {
@@ -109,17 +113,17 @@ function Svg({data, otherData, indiaData}) {
 
   return (
     <div>
-      {/* <svg
+      <svg
           ref={ref}
-      /> */}
-    <MapContainer center={[47, 2]} zoom={3} scrollWheelZoom={true}>
+      />
+    {/* <MapContainer center={[47, 2]} zoom={3} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
     />
     <LayerGroup>
           <D3Layer />
-    </LayerGroup>
+    </LayerGroup> */}
     
     {/* <GeoJSON data={data.features}/> */}
 
@@ -138,7 +142,7 @@ function Svg({data, otherData, indiaData}) {
             <Polygon pathOptions={{fillColor:"none", weight: 0.5, fillOpacity: 0.05}} positions={coordinates} />
         )
     })
-    } */}
+    }
     </MapContainer>
     </div>
 
