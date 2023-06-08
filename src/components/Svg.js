@@ -113,9 +113,6 @@ function Svg({data, otherData, indiaData}) {
 
   return (
     <div>
-      {/* <svg
-          ref={ref}
-      /> */}
     <MapContainer center={[47, 2]} zoom={3} scrollWheelZoom={true}>
     <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -125,9 +122,9 @@ function Svg({data, otherData, indiaData}) {
           <D3Layer />
     </LayerGroup>
     
-    <GeoJSON data={data.features}/>
+    {/* <GeoJSON data={data.features}/> */}
 
-    {data.features.map((state) => {
+    {/* {data.features.map((state) => {
         const coordinates = state.geometry.coordinates.map((item)=> {
           return item[0].length === 2 ? item.map((item)=>[item[1],item[0]]) : item[0].map((item)=>[item[1],item[0]])
           // if (item[0].length === 2){
@@ -139,10 +136,10 @@ function Svg({data, otherData, indiaData}) {
         })
 
         return (
-            <Polygon pathOptions={{fillColor:"white", weight: 0.01, fillOpacity:-0.1}} positions={coordinates} />
+            <Polygon pathOptions={{fillColor:"none", weight: 0.5, fillOpacity: 0.05}} positions={coordinates} />
         )
     })
-    }
+    } */}
     </MapContainer>
     </div>
 
