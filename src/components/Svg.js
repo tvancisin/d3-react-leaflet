@@ -4,25 +4,28 @@ import { LayerGroup, MapContainer, SVGOverlay, GeoJSON, TileLayer, Polygon, useM
 import L from "leaflet";
 import * as d3Geo from "d3-geo";
 
-function Svg({data, otherData, indiaData}) {
+function Svg({data, otherData, birthData}) {
+  console.log(birthData);
 
   const ref = useRef()
   function D3Layer() {
     const [gata, setGata] = useState ([]);
-    const [idata, setIdata] = useState ([]);
+    const [bData, setBdata] = useState ([]);
     
     useEffect(() => {
     d3.csv(otherData, 
       function(gata){
+        console.log(gata);
         return { country: gata.Country, lat: +gata.Latitude, long: +gata.Longitude, birth: +gata.Birth, floruit: +gata.Floruit }
       }).then(setGata)
     }, []);
 
     useEffect(()=>{
-      d3.csv(indiaData,
-        function (idata) {
-          return { person: idata.forename, start: d3.timeParse("%Y")(idata.arrival), lat: +idata.blatitude, long: +idata.blongitude}
-        }).then(setIdata)
+      d3.json(birthData,
+        function (bData) {
+          console.log(bData);
+          return { person: bData.forename, lat: +bData.birth_location.latitude, long: +bData.birth_location.longitude}
+        }).then(setBdata)
     },[])
 
     let myScale = d3.scaleLinear()
@@ -35,24 +38,24 @@ function Svg({data, otherData, indiaData}) {
       L.svg().addTo(map);
       d3.select("svg")
         .selectAll("myCircles")
-        .data(idata)
+        .data(birthData)
         .join("circle")
-          .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
-          .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
+          .attr("cx", d => map.latLngToLayerPoint([d.birth_location.latitude, d.birth_location.longitude]).x)
+          .attr("cy", d => map.latLngToLayerPoint([d.birth_location.latitude, d.birth_location.longitude]).y)
           .attr("r", 10)
           .style("fill", "white")
-          // .attr("stroke", "yellow")
-          .attr("stroke-width", 3)
-          .attr("fill-opacity", 1)
+          .attr("stroke", "white")
+          .attr("stroke-width", 1)
+          .attr("fill-opacity", 0.05)
       
       function update() {
         d3.selectAll("circle")
-          .attr("cx", d => map.latLngToLayerPoint([d.lat, d.long]).x)
-          .attr("cy", d => map.latLngToLayerPoint([d.lat, d.long]).y)
+          .attr("cx", d => map.latLngToLayerPoint([d.birth_location.latitude, d.birth_location.longitude]).x)
+          .attr("cy", d => map.latLngToLayerPoint([d.birth_location.latitude, d.birth_location.longitude]).y)
       }
     
       map.on("moveend", update)
-    },[idata])
+    },[bData, map])
 
     // useEffect(()=>{
     //   console.log("AYAYA");
